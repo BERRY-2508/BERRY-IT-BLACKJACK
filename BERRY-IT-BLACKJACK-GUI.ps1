@@ -13,8 +13,8 @@ $green = [System.Drawing.ColorTranslator]::FromHtml('#68C8A1')
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = 'BERRY IT | Blackjack'
-$form.ClientSize = New-Object System.Drawing.Size(900,670)
-$form.MinimumSize = New-Object System.Drawing.Size(760,630)
+$form.ClientSize = New-Object System.Drawing.Size(900,760)
+$form.MinimumSize = New-Object System.Drawing.Size(760,740)
 $form.StartPosition = 'CenterScreen'
 $form.BackColor = $bg
 $form.ForeColor = $white
@@ -44,7 +44,7 @@ $null=Add-Label 'B E R R Y   I T' 0 13 900 37 22 $red $true
 $null=Add-Label 'B L A C K J A C K' 0 48 900 29 14 $white $true
 $null=Add-Label 'CONSULT   •   SECURE   •   MANAGE   •   GROW' 0 80 900 22 9 $muted
 $balanceLabel=Add-Label 'BALANCE: 100 CHIPS' 25 115 280 32 15 $white $true
-$betLabel=Add-Label 'BET: 10 CHIPS' 640 115 230 32 14 $red $true
+$betLabel=Add-Label 'BET: 0 CHIPS' 640 115 230 32 14 $red $true
 $dealerTotalLabel=Add-Label 'DEALER  |  TOTAL: --' 40 167 820 25 12 $muted $true
 $dealerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $dealerArea.Location=New-Object System.Drawing.Point(35,196)
@@ -58,14 +58,49 @@ $playerArea.Size=New-Object System.Drawing.Size(830,100)
 $playerArea.BackColor=$bg; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true
 $form.Controls.Add($playerArea)
 $statusLabel=Add-Label 'Choose your bet and press DEAL.' 35 460 830 42 15 $white $true
-$null=Add-Label 'BET' 164 524 75 32 11 $muted $true
-$betInput=New-Object System.Windows.Forms.NumericUpDown
-$betInput.Location=New-Object System.Drawing.Point(240,527)
-$betInput.Size=New-Object System.Drawing.Size(100,30)
-$betInput.Minimum=5; $betInput.Maximum=100; $betInput.Increment=5; $betInput.Value=10
-$betInput.BackColor=$panel; $betInput.ForeColor=$white
-$form.Controls.Add($betInput)
-$state=@{ Balance=100; Bet=0; Deck=@(); Player=@(); Dealer=@(); InRound=$false; Finished=$false }
+$null=Add-Label 'CLICK CHIPS TO PLACE YOUR BET' 0 503 900 24 11 $muted $true
+$state=@{ Balance=100; Bet=0; SelectedBet=0; Deck=@(); Player=@(); Dealer=@(); InRound=$false; Finished=$false }
+$chipButtons=@()
+$chipValues=@(5,10,25,50)
+$chipColors=@('#555E6B','#146E82','#AB651C','#B4203B')
+for($i=0;$i -lt $chipValues.Count;$i++){
+    $chip=New-Object System.Windows.Forms.Button
+    $chip.Text=[string]$chipValues[$i]
+    $chip.Tag=$chipValues[$i]
+    $chip.Size=New-Object System.Drawing.Size(66,66)
+    $chip.Location=New-Object System.Drawing.Point((238+$i*91),534)
+    $chip.FlatStyle='Flat'; $chip.FlatAppearance.BorderSize=3
+    $chip.FlatAppearance.BorderColor=$white
+    $chip.BackColor=[System.Drawing.ColorTranslator]::FromHtml($chipColors[$i])
+    $chip.ForeColor=$white
+    $chip.Font=New-Object System.Drawing.Font('Segoe UI',15,[System.Drawing.FontStyle]::Bold)
+    $circle=New-Object System.Drawing.Drawing2D.GraphicsPath
+    $circle.AddEllipse(0,0,65,65)
+    $chip.Region=New-Object System.Drawing.Region($circle)
+    $circle.Dispose()
+    $chip.Add_Click({
+        if($state.InRound){return}
+        $amount=[int]$this.Tag
+        if(($state.SelectedBet+$amount) -le $state.Balance){
+            $state.SelectedBet += $amount
+            $statusLabel.ForeColor=$white
+            $statusLabel.Text="Bet selected: $($state.SelectedBet) chips. Press DEAL to play."
+        }else{
+            $statusLabel.ForeColor=$red
+            $statusLabel.Text="Not enough chips to add $amount to your bet."
+        }
+        Refresh-Table
+    })
+    $form.Controls.Add($chip)
+    $chipButtons+= $chip
+}
+$clearBetButton=Add-Button 'CLEAR BET' 603 545 145 {
+    if($state.InRound){return}
+    $state.SelectedBet=0
+    $statusLabel.ForeColor=$white
+    $statusLabel.Text='Select chips to place a bet.'
+    Refresh-Table
+}
 
 function Get-Score($hand) {
     $score=0; $aces=0
@@ -128,14 +163,16 @@ function Draw-Hand($container,$hand,$hideHole) {
 }
 function Refresh-Table {
     $balanceLabel.Text="BALANCE: $($state.Balance) CHIPS"
-    $betLabel.Text="BET: $($state.Bet) CHIPS"
+    $displayBet=if($state.InRound){$state.Bet}else{$state.SelectedBet}
+    $betLabel.Text="BET: $displayBet CHIPS"
     Draw-Hand $dealerArea $state.Dealer $state.InRound
     Draw-Hand $playerArea $state.Player $false
     Update-Totals
     $hitButton.Enabled=$state.InRound
     $standButton.Enabled=$state.InRound
-    $dealButton.Enabled=(-not $state.InRound)
-    $betInput.Enabled=(-not $state.InRound)
+    $dealButton.Enabled=(-not $state.InRound -and $state.SelectedBet -ge 5 -and $state.SelectedBet -le $state.Balance)
+    foreach($chip in $chipButtons){$chip.Enabled=(-not $state.InRound)}
+    $clearBetButton.Enabled=(-not $state.InRound)
     if($state.Balance -lt 5 -and -not $state.InRound) {
         $dealButton.Enabled=$false
         $statusLabel.Text="Out of chips. Press RESET BANKROLL to start again."
@@ -150,10 +187,11 @@ function End-Round($result) {
     elseif($result -eq 'blackjack'){$gain=[int][Math]::Round($state.Bet*1.5,0,[MidpointRounding]::AwayFromZero);$state.Balance += $gain;$statusLabel.Text="BLACKJACK!  +$gain chips";$statusLabel.ForeColor=$green}
     elseif($result -eq 'lose'){$state.Balance -= $state.Bet;$statusLabel.Text="DEALER WINS  -$($state.Bet) chips  |  $ps vs $ds";$statusLabel.ForeColor=$red}
     else{$statusLabel.Text="PUSH — bet returned  |  $ps vs $ds";$statusLabel.ForeColor=$white}
+    $state.SelectedBet=0
     Refresh-Table
 }
-$dealButton=Add-Button 'DEAL' 360 520 112 {
-    $bet=[int]$betInput.Value
+$dealButton=Add-Button 'DEAL' 265 620 112 {
+    $bet=[int]$state.SelectedBet
     if($bet -gt $state.Balance -or $bet -lt 5 -or $bet%5 -ne 0) {
         [System.Windows.Forms.MessageBox]::Show('Bet must be a multiple of 5 and within your balance.');return
     }
@@ -173,27 +211,27 @@ $dealButton=Add-Button 'DEAL' 360 520 112 {
         else{End-Round 'lose'}
     }else{Refresh-Table}
 }
-$hitButton=Add-Button 'HIT' 485 520 110 {
+$hitButton=Add-Button 'HIT' 395 620 110 {
     $state.Player=@($state.Player)+@(Draw-Card)
     if((Get-Score $state.Player) -gt 21){End-Round 'lose'}
     else {Refresh-Table}
 }
-$standButton=Add-Button 'STAND' 607 520 110 {
+$standButton=Add-Button 'STAND' 523 620 110 {
     while((Get-Score $state.Dealer) -lt 17){$state.Dealer=@($state.Dealer)+@(Draw-Card)}
     $player=Get-Score $state.Player; $dealer=Get-Score $state.Dealer
     if($dealer -gt 21 -or $player -gt $dealer){End-Round 'win'}
     elseif($player -eq $dealer){End-Round 'push'}
     else{End-Round 'lose'}
 }
-$resetButton=Add-Button 'RESET BANKROLL' 360 582 235 {
+$resetButton=Add-Button 'RESET BANKROLL' 333 676 235 {
     $reply=[System.Windows.Forms.MessageBox]::Show('Reset your virtual balance to 100 chips?','Reset bankroll','YesNo','Question')
     if($reply -ne 'Yes'){return}
-    $state.Balance=100; $state.Bet=0; $state.InRound=$false
+    $state.Balance=100; $state.Bet=0; $state.SelectedBet=0; $state.InRound=$false
     $state.Player=@(); $state.Dealer=@()
-    $betInput.Maximum=100; $betInput.Value=10; $statusLabel.ForeColor=$white
+    $statusLabel.ForeColor=$white
     $statusLabel.Text='Bankroll reset. Choose a bet to play.'
     Refresh-Table
 }
-$null=Add-Label 'VIRTUAL CHIPS ONLY  •  NO REAL-MONEY GAMBLING' 0 637 900 22 9 $muted
+$null=Add-Label 'VIRTUAL CHIPS ONLY  •  NO REAL-MONEY GAMBLING' 0 730 900 22 9 $muted
 Refresh-Table
 [void]$form.ShowDialog()
