@@ -100,7 +100,7 @@ function Draw-Hand($container,$hand,$hideHole) {
             $box.Text='★'; $box.BackColor=$red; $box.ForeColor=$white
         }else{
             $parts=$card.Split(':')
-            $suit=$parts[1]; $box.Text=$parts[0]+"\r\n"+$suit
+            $suit=$parts[1]; $box.Text=$parts[0]+"`r`n"+$suit
             if($suit -in @('♥','♦')){$box.ForeColor=$red}
         }
         $container.Controls.Add($box)
@@ -169,7 +169,7 @@ $resetButton=Add-Button 'RESET BANKROLL' 360 582 235 {
     if($reply -ne 'Yes'){return}
     $state.Balance=100; $state.Bet=0; $state.InRound=$false
     $state.Player=@(); $state.Dealer=@()
-    $betInput.Value=10; $statusLabel.ForeColor=$white
+    $betInput.Maximum=100; $betInput.Value=10; $statusLabel.ForeColor=$white
     $statusLabel.Text='Bankroll reset. Choose a bet to play.'
     Refresh-Table
 }
