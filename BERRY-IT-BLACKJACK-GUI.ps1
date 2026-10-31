@@ -64,13 +64,12 @@ $accent.Dock='Bottom';$accent.Height=3;$accent.BackColor=$red;$header.Controls.A
 
 # Bottom control area occupies its own space, even at minimum size.
 $controls=New-Object System.Windows.Forms.Panel
-$controls.Dock='Bottom';$controls.Height=202;$controls.BackColor=$surface
+$controls.Dock='Bottom';$controls.Height=154;$controls.BackColor=$surface
 
-$controlGrid=Grid 4
+$controlGrid=Grid 3
 $controlGrid.Padding=New-Object System.Windows.Forms.Padding(18,6,18,6)
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',22))) | Out-Null
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',59))) | Out-Null
-$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',50))) | Out-Null
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
 $controls.Controls.Add($controlGrid)
 $null=TableRow $controlGrid 0 (Label 'SELECT CHIPS TO PLACE YOUR BET' 10 $muted $true)
@@ -83,12 +82,13 @@ $chips.Width=390
 $chips.Height=57
 $null=TableRow $controlGrid 1 $chips
 $actions=New-Object System.Windows.Forms.TableLayoutPanel
-$actions.Dock='Fill';$actions.RowCount=1;$actions.ColumnCount=3
-$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',33.333))) | Out-Null
-$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',33.333))) | Out-Null
-$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',33.334))) | Out-Null
-$actions.MaximumSize=New-Object System.Drawing.Size(450,0)
-$actions.Anchor='None';$actions.Width=450;$actions.Height=48
+$actions.Dock='Fill';$actions.RowCount=1;$actions.ColumnCount=4
+$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',25))) | Out-Null
+$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',25))) | Out-Null
+$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',25))) | Out-Null
+$actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',25))) | Out-Null
+$actions.MaximumSize=New-Object System.Drawing.Size(650,0)
+$actions.Anchor='None';$actions.Width=650;$actions.Height=53
 $null=TableRow $controlGrid 2 $actions
 $dealButton=Action 'DEAL' $red
 $hitButton=Action 'HIT' (C '#73313B')
@@ -97,18 +97,13 @@ $actions.Controls.Add($dealButton,0,0)
 $actions.Controls.Add($hitButton,1,0)
 $actions.Controls.Add($standButton,2,0)
 
-$footer=New-Object System.Windows.Forms.TableLayoutPanel
-$footer.Dock='Fill';$footer.RowCount=1;$footer.ColumnCount=2
-$footer.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',66))) | Out-Null
-$footer.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',34))) | Out-Null
-$footerText=Label 'BLACKJACK PAYS 3:2  •  DEALER STANDS ON 17' 9 $muted
-$footerText.TextAlign='MiddleLeft'
-$footerText.Margin=New-Object System.Windows.Forms.Padding(0)
+# Compact secondary control sits beside Stand, separated by a larger gap.
 $resetButton=Action 'RESET BANKROLL' $surface2
-$resetButton.Margin=New-Object System.Windows.Forms.Padding(6,1,6,1)
 $resetButton.Font=New-Object System.Drawing.Font('Segoe UI',9,[System.Drawing.FontStyle]::Bold)
-$footer.Controls.Add($footerText,0,0);$footer.Controls.Add($resetButton,1,0)
-$null=TableRow $controlGrid 3 $footer
+$resetButton.Margin=New-Object System.Windows.Forms.Padding(27,8,6,8)
+$resetButton.FlatAppearance.BorderSize=1
+$resetButton.FlatAppearance.BorderColor=$line
+$actions.Controls.Add($resetButton,3,0)
 
 # Table and hands use proportional space, not absolute y coordinates.
 $main=New-Object System.Windows.Forms.Panel
@@ -131,7 +126,7 @@ $root.Margin=New-Object System.Windows.Forms.Padding(0)
 $root.Padding=New-Object System.Windows.Forms.Padding(0)
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',112))) | Out-Null
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
-$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',202))) | Out-Null
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',154))) | Out-Null
 $form.Controls.Add($root)
 $header.Dock='Fill';$main.Dock='Fill';$controls.Dock='Fill'
 $root.Controls.Add($header,0,0)
