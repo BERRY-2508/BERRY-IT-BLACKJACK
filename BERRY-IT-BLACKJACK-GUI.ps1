@@ -6,6 +6,8 @@ Add-Type -AssemblyName System.Drawing
 
 $bg = [System.Drawing.ColorTranslator]::FromHtml('#0B0B0E')
 $panel = [System.Drawing.ColorTranslator]::FromHtml('#1B1B20')
+$surface = [System.Drawing.ColorTranslator]::FromHtml('#141417')
+$line = [System.Drawing.ColorTranslator]::FromHtml('#38383E')
 $red = [System.Drawing.ColorTranslator]::FromHtml('#FF3C3C')
 $white = [System.Drawing.ColorTranslator]::FromHtml('#F4F4F4')
 $muted = [System.Drawing.ColorTranslator]::FromHtml('#ACAAB2')
@@ -13,13 +15,15 @@ $green = [System.Drawing.ColorTranslator]::FromHtml('#68C8A1')
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = 'BERRY IT | Blackjack'
-$form.ClientSize = New-Object System.Drawing.Size(900,760)
-$form.MinimumSize = New-Object System.Drawing.Size(760,740)
+$form.ClientSize = New-Object System.Drawing.Size(980,850)
+$form.MinimumSize = New-Object System.Drawing.Size(830,770)
 $form.StartPosition = 'CenterScreen'
 $form.BackColor = $bg
 $form.ForeColor = $white
 $form.Font = New-Object System.Drawing.Font('Segoe UI',11)
 $form.AutoScaleMode = 'Dpi'
+$form.FormBorderStyle = 'Sizable'
+$form.MaximizeBox = $true
 
 function Add-Label($text,$x,$y,$w,$h,$size,$color,$bold=$false) {
     $l = New-Object System.Windows.Forms.Label
@@ -27,15 +31,15 @@ function Add-Label($text,$x,$y,$w,$h,$size,$color,$bold=$false) {
     $l.Size=New-Object System.Drawing.Size($w,$h)
     $style = if($bold){[System.Drawing.FontStyle]::Bold}else{[System.Drawing.FontStyle]::Regular}
     $l.Font=New-Object System.Drawing.Font('Segoe UI',$size,$style)
-    $l.ForeColor=$color; $l.BackColor=$bg; $l.TextAlign='MiddleCenter'
+    $l.ForeColor=$color; $l.BackColor=$bg; $l.TextAlign='MiddleCenter'; $l.AutoEllipsis=$true
     $form.Controls.Add($l); return $l
 }
 function Add-Button($text,$x,$y,$w,$onClick) {
     $b=New-Object System.Windows.Forms.Button
     $b.Text=$text; $b.Location=New-Object System.Drawing.Point($x,$y)
     $b.Size=New-Object System.Drawing.Size($w,44)
-    $b.FlatStyle='Flat'; $b.FlatAppearance.BorderSize=0
-    $b.BackColor=$panel; $b.ForeColor=$white
+    $b.FlatStyle='Flat'; $b.FlatAppearance.BorderSize=1; $b.FlatAppearance.BorderColor=$line
+    $b.BackColor=$panel; $b.ForeColor=$white; $b.Cursor='Hand'
     $b.Font=New-Object System.Drawing.Font('Segoe UI',11,[System.Drawing.FontStyle]::Bold)
     $b.Add_Click($onClick)
     $form.Controls.Add($b); return $b
@@ -49,13 +53,13 @@ $dealerTotalLabel=Add-Label 'DEALER  |  TOTAL: --' 40 167 820 25 12 $muted $true
 $dealerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $dealerArea.Location=New-Object System.Drawing.Point(35,196)
 $dealerArea.Size=New-Object System.Drawing.Size(830,100)
-$dealerArea.BackColor=$bg; $dealerArea.WrapContents=$false; $dealerArea.AutoScroll=$true
+$dealerArea.BackColor=$surface; $dealerArea.WrapContents=$false; $dealerArea.AutoScroll=$true
 $form.Controls.Add($dealerArea)
 $playerTotalLabel=Add-Label 'YOUR HAND  |  TOTAL: --' 40 313 820 25 12 $muted $true
 $playerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $playerArea.Location=New-Object System.Drawing.Point(35,341)
 $playerArea.Size=New-Object System.Drawing.Size(830,100)
-$playerArea.BackColor=$bg; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true
+$playerArea.BackColor=$surface; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true
 $form.Controls.Add($playerArea)
 $statusLabel=Add-Label 'Choose your bet and press DEAL.' 35 460 830 42 15 $white $true
 $null=Add-Label 'CLICK CHIPS TO PLACE YOUR BET' 0 503 900 24 11 $muted $true
@@ -69,7 +73,8 @@ for($i=0;$i -lt $chipValues.Count;$i++){
     $chip.Tag=$chipValues[$i]
     $chip.Size=New-Object System.Drawing.Size(66,66)
     $chip.Location=New-Object System.Drawing.Point((238+$i*91),534)
-    $chip.FlatStyle='Flat'; $chip.FlatAppearance.BorderSize=3
+    $chip.Cursor='Hand'
+    $chip.FlatStyle='Flat'; $chip.FlatAppearance.BorderSize=2
     $chip.FlatAppearance.BorderColor=$white
     $chip.BackColor=[System.Drawing.ColorTranslator]::FromHtml($chipColors[$i])
     $chip.ForeColor=$white
@@ -177,7 +182,7 @@ function Refresh-Table {
         $dealButton.Enabled=$false
         $statusLabel.Text="Out of chips. Press RESET BANKROLL to start again."
     }
-    if(-not $state.InRound){$betInput.Maximum=[Math]::Max(5,$state.Balance)}
+    # Betting is controlled by the clickable chips; no numeric input is used.
 }
 function End-Round($result) {
     $state.InRound=$false
@@ -233,5 +238,75 @@ $resetButton=Add-Button 'RESET BANKROLL' 333 676 235 {
     Refresh-Table
 }
 $null=Add-Label 'VIRTUAL CHIPS ONLY  •  NO REAL-MONEY GAMBLING' 0 730 900 22 9 $muted
+# Responsive layout: centre cards, chips and actions at every window size.
+# Position elements using the current client dimensions rather than fixed initial pixels.
+function Update-Layout {
+    $w=$form.ClientSize.Width
+    $h=$form.ClientSize.Height
+    $mid=[int]($w/2)
+    $pad=36
+    $tableWidth=$w-($pad*2)
+
+    foreach($item in @(
+        @($form.Controls[0],13,39),
+        @($form.Controls[1],52,28),
+        @($form.Controls[2],84,22)
+    )){
+        $item[0].Location=New-Object System.Drawing.Point(0,$item[1])
+        $item[0].Width=$w
+    }
+    $balanceLabel.Location=New-Object System.Drawing.Point($pad,131)
+    $balanceLabel.Width=[int](($w/2)-$pad)
+    $balanceLabel.TextAlign='MiddleLeft'
+    $betLabel.Location=New-Object System.Drawing.Point($mid,131)
+    $betLabel.Width=[int](($w/2)-$pad)
+    $betLabel.TextAlign='MiddleRight'
+
+    $available=$h-380
+    $handGap=[int][Math]::Max(135,[Math]::Min(210,$available/2))
+    $dealerY=191
+    $playerY=$dealerY+$handGap
+
+    $dealerTotalLabel.SetBounds($pad,$dealerY-27,$tableWidth,27)
+    $dealerArea.SetBounds($pad,$dealerY,$tableWidth,110)
+    $playerTotalLabel.SetBounds($pad,$playerY-27,$tableWidth,27)
+    $playerArea.SetBounds($pad,$playerY,$tableWidth,110)
+
+    $statusY=[int][Math]::Max(($playerY+122),($h-272))
+    $statusLabel.SetBounds($pad,$statusY,$tableWidth,40)
+
+    # Betting and action rows remain visible above the footer, including on small screens.
+    $chipLabel=$form.Controls | Where-Object { $_ -is [System.Windows.Forms.Label] -and $_.Text -eq 'CLICK CHIPS TO PLACE YOUR BET' } | Select-Object -First 1
+    if($chipLabel){$chipLabel.SetBounds(0,($h-225),$w,25)}
+    $chipsW=4*66+3*24
+    $chipsStart=$mid-[int]($chipsW/2)-48
+    for($i=0;$i -lt $chipButtons.Count;$i++){
+        $chipButtons[$i].Location=New-Object System.Drawing.Point(($chipsStart+$i*90),($h-193))
+    }
+    $clearBetButton.SetBounds(($chipsStart+$chipsW+18),($h-185),116,44)
+    $actionWidth=116
+    $actionGap=16
+    $actionsStart=$mid-[int]((3*$actionWidth+2*$actionGap)/2)
+    $dealButton.SetBounds($actionsStart,($h-112),$actionWidth,44)
+    $hitButton.SetBounds(($actionsStart+$actionWidth+$actionGap),($h-112),$actionWidth,44)
+    $standButton.SetBounds(($actionsStart+2*($actionWidth+$actionGap)),($h-112),$actionWidth,44)
+    $resetButton.SetBounds(($w-205),($h-51),175,34)
+
+    $footer=$form.Controls | Where-Object { $_ -is [System.Windows.Forms.Label] -and $_.Text -like 'VIRTUAL CHIPS ONLY*' } | Select-Object -First 1
+    if($footer){$footer.SetBounds($pad,($h-49),($w-255),30);$footer.TextAlign='MiddleLeft'}
+    Center-Hand $dealerArea
+    Center-Hand $playerArea
+}
+# Set a softer appearance and a clear primary action.
+$dealButton.BackColor=$red
+$dealButton.FlatAppearance.BorderColor=$red
+$hitButton.BackColor=[System.Drawing.ColorTranslator]::FromHtml('#743038')
+$standButton.BackColor=[System.Drawing.ColorTranslator]::FromHtml('#282830')
+$statusLabel.BackColor=$surface
+$statusLabel.ForeColor=$white
+$dealerArea.Padding=New-Object System.Windows.Forms.Padding(0)
+$playerArea.Padding=New-Object System.Windows.Forms.Padding(0)
+$form.Add_Resize({Update-Layout})
+Update-Layout
 Refresh-Table
 [void]$form.ShowDialog()
