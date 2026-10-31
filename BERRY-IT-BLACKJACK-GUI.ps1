@@ -45,17 +45,17 @@ $null=Add-Label 'B L A C K J A C K' 0 48 900 29 14 $white $true
 $null=Add-Label 'CONSULT   •   SECURE   •   MANAGE   •   GROW' 0 80 900 22 9 $muted
 $balanceLabel=Add-Label 'BALANCE: 100 CHIPS' 25 115 280 32 15 $white $true
 $betLabel=Add-Label 'BET: 10 CHIPS' 640 115 230 32 14 $red $true
-$null=Add-Label 'DEALER' 40 167 820 25 12 $muted $true
+$dealerTotalLabel=Add-Label 'DEALER  |  TOTAL: --' 40 167 820 25 12 $muted $true
 $dealerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $dealerArea.Location=New-Object System.Drawing.Point(35,196)
 $dealerArea.Size=New-Object System.Drawing.Size(830,100)
-$dealerArea.BackColor=$bg; $dealerArea.WrapContents=$false
+$dealerArea.BackColor=$bg; $dealerArea.WrapContents=$false; $dealerArea.AutoScroll=$true
 $form.Controls.Add($dealerArea)
-$null=Add-Label 'YOUR HAND' 40 313 820 25 12 $muted $true
+$playerTotalLabel=Add-Label 'YOUR HAND  |  TOTAL: --' 40 313 820 25 12 $muted $true
 $playerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $playerArea.Location=New-Object System.Drawing.Point(35,341)
 $playerArea.Size=New-Object System.Drawing.Size(830,100)
-$playerArea.BackColor=$bg; $playerArea.WrapContents=$false
+$playerArea.BackColor=$bg; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true
 $form.Controls.Add($playerArea)
 $statusLabel=Add-Label 'Choose your bet and press DEAL.' 35 460 830 42 15 $white $true
 $null=Add-Label 'BET' 164 524 75 32 11 $muted $true
@@ -84,6 +84,25 @@ function Draw-Card {
     if($last -eq 0){$state.Deck=@()}else{$state.Deck=@($state.Deck[0..($last-1)])}
     return $c
 }
+function Center-Hand($container) {
+    # FlowLayoutPanel aligns to the left by default. Centre its card row after every draw.
+    $cardWidth=82
+    $totalWidth=$container.Controls.Count*$cardWidth
+    $left=[Math]::Max(0,[int](($container.ClientSize.Width-$totalWidth)/2))
+    $container.Padding=New-Object System.Windows.Forms.Padding($left,0,0,0)
+}
+function Update-Totals {
+    if($state.Player.Count -gt 0){
+        $playerTotalLabel.Text="YOUR HAND  |  TOTAL: $(Get-Score $state.Player)"
+    }else{$playerTotalLabel.Text='YOUR HAND  |  TOTAL: --'}
+    if($state.Dealer.Count -eq 0){$dealerTotalLabel.Text='DEALER  |  TOTAL: --'}
+    elseif($state.InRound){
+        $shown=Get-Score @($state.Dealer[0])
+        $dealerTotalLabel.Text="DEALER  |  SHOWING: $shown  (+ hidden card)"
+    }else{
+        $dealerTotalLabel.Text="DEALER  |  TOTAL: $(Get-Score $state.Dealer)"
+    }
+}
 function Draw-Hand($container,$hand,$hideHole) {
     $container.Controls.Clear()
     for($i=0;$i -lt $hand.Count;$i++) {
@@ -105,12 +124,14 @@ function Draw-Hand($container,$hand,$hideHole) {
         }
         $container.Controls.Add($box)
     }
+    Center-Hand $container
 }
 function Refresh-Table {
     $balanceLabel.Text="BALANCE: $($state.Balance) CHIPS"
     $betLabel.Text="BET: $($state.Bet) CHIPS"
     Draw-Hand $dealerArea $state.Dealer $state.InRound
     Draw-Hand $playerArea $state.Player $false
+    Update-Totals
     $hitButton.Enabled=$state.InRound
     $standButton.Enabled=$state.InRound
     $dealButton.Enabled=(-not $state.InRound)
