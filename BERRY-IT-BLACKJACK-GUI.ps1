@@ -112,7 +112,7 @@ $null=TableRow $controlGrid 3 $footer
 $main=New-Object System.Windows.Forms.Panel
 $main.Dock='Fill';$main.Padding=New-Object System.Windows.Forms.Padding(30,15,30,13)
 $form.Controls.Add($main)
-$main.BringToFront()
+$main.SendToBack()
 $play=Grid 7
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',46))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
