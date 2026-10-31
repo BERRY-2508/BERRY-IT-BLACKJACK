@@ -1,4 +1,23 @@
-# Berry Black Jack with Currency System
+# BERRY IT visual theme — PowerShell 5.1 compatible; game rules remain unchanged.
+$BerryBorder = ('─' * 55)
+
+function Show-BerryHeader {
+    Write-Host ""
+    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+    Write-Host "       B E R R Y   " -ForegroundColor White -NoNewline
+    Write-Host "I T" -ForegroundColor Red
+    Write-Host "           B L A C K J A C K" -ForegroundColor Red
+    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+    Write-Host "     CONSULT  |  SECURE  |  MANAGE  |  GROW" -ForegroundColor Gray
+    Write-Host ""
+}
+
+function Show-BerryScreen {
+    Clear-Host
+    Show-BerryHeader
+}
+
+# BERRY IT Blackjack — original gameplay, themed terminal presentation
 
 $again = $null
 
@@ -46,12 +65,12 @@ function Check-Blackjack {
 
 # Game loop
 while ($again -ne "n" -and $balance -gt 0) {
-    cls  # Clear the screen before showing the balance
+    Show-BerryScreen  # Clear the screen before showing the balance
 
     # Display current balance before each round
     Write-Host "`n───────────────────────────────────────────────────"
-    Write-Host ("Current balance: $($balance) Chips") -ForegroundColor Green
-    Write-Host "───────────────────────────────────────────────────"
+    Write-Host ("Current balance: $($balance) Chips") -ForegroundColor Cyan
+    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
 
     # Check if the balance is below 5 and prompt for a loan if no loan has been taken
     if ($balance -lt 5 -and $loanAmount -eq 0) {
@@ -81,7 +100,7 @@ while ($again -ne "n" -and $balance -gt 0) {
         $loanAmount += $interest
         $balance -= $interest
         Write-Host "`nInterest charged: $($interest) Chips." -ForegroundColor DarkYellow
-        Write-Host "Loan balance is now: $($loanAmount) Chips." -ForegroundColor DarkRed
+        Write-Host "Loan balance is now: $($loanAmount) Chips." -ForegroundColor Red
     }
 
     # Repayment feature: Prompt to repay loan if the player has a loan
@@ -90,7 +109,7 @@ while ($again -ne "n" -and $balance -gt 0) {
         if ($repaymentOption -eq "y" -or $repaymentOption -eq "Y") {
             if ($balance -ge $loanAmount) {
                 $balance -= $loanAmount  # Repay loan
-                Write-Host "`nYou have repaid your loan. Your new balance is: $($balance) Chips" -ForegroundColor Green
+                Write-Host "`nYou have repaid your loan. Your new balance is: $($balance) Chips" -ForegroundColor Cyan
                 $loanAmount = 0  # Reset loan balance
             }
             else {
@@ -143,7 +162,7 @@ while ($again -ne "n" -and $balance -gt 0) {
     if (Check-Blackjack $cards) {
         Write-Host "`nYou win with a Blackjack! Payout is 1.5x your bet."
         $balance += [math]::Round($bet * 1.5, 2)  # 1.5x payout for Blackjack
-        Write-Host "`nYour new balance is: $($balance) Chips" -ForegroundColor Green
+        Write-Host "`nYour new balance is: $($balance) Chips" -ForegroundColor Cyan
         continue  # Skip the rest of the round, player already won
     }
 
@@ -157,14 +176,14 @@ while ($again -ne "n" -and $balance -gt 0) {
         continue  # Skip the rest of the round, it's a push
     }
 
-    cls  # Clear the screen at the start of each round
+    Show-BerryScreen  # Clear the screen at the start of each round
 
     Write-Host "`n───────────────────────────────────────────────────"
-    Write-Host "$dealer" -ForegroundColor DarkRed  # Dealer's cards in DarkRed
-    Write-Host "───────────────────────────────────────────────────"
+    Write-Host "$dealer" -ForegroundColor Red  # Dealer's cards in DarkRed
+    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
 
-    Write-Host "$you         Value: $youtotal" -ForegroundColor DarkCyan  # Player's hand in DarkCyan
-    Write-Host "───────────────────────────────────────────────────"
+    Write-Host "$you         Value: $youtotal" -ForegroundColor White  # Player's hand in DarkCyan
+    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
 
     $move = $null
     $n = 4
@@ -176,17 +195,17 @@ while ($again -ne "n" -and $balance -gt 0) {
             $move = Read-Host -Prompt "`nType 'a' to Hit, 's' to Stand"
 
             if ($move -eq 'a') {
-                cls  # Clear the screen each time the player hits
+                Show-BerryScreen  # Clear the screen each time the player hits
                 $you = $you + " " + $deal[$n]
                 $youtotal = ($youtotal) + ([string]$cardvalue[$n] / 1)
                 $n++ 
-                cls  # Clear the screen after the new card is dealt
+                Show-BerryScreen  # Clear the screen after the new card is dealt
 
                 Write-Host "`n───────────────────────────────────────────────────"
-                Write-Host "$dealer" -ForegroundColor DarkRed
-                Write-Host "───────────────────────────────────────────────────"
-                Write-Host "$you        Value: $youtotal" -ForegroundColor DarkCyan
-                Write-Host "───────────────────────────────────────────────────"
+                Write-Host "$dealer" -ForegroundColor Red
+                Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                Write-Host "$you        Value: $youtotal" -ForegroundColor White
+                Write-Host "  $BerryBorder" -ForegroundColor DarkGray
 
             }
             elseif ($move -eq 's') {
@@ -197,47 +216,47 @@ while ($again -ne "n" -and $balance -gt 0) {
                     $dealer = $dealer + " " + $deal[$n]
                     $dealertotal = ($dealertotal) + ([string]$cardvalue[$n] / 1)
                     $n++ 
-                    cls  # Clear the screen after each dealer card is dealt
+                    Show-BerryScreen  # Clear the screen after each dealer card is dealt
 
                     Write-Host "`n───────────────────────────────────────────────────"
-                    Write-Host "$dealer" -ForegroundColor DarkRed
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "$you        Value: $youtotal" -ForegroundColor DarkCyan
-                    Write-Host "───────────────────────────────────────────────────"
+                    Write-Host "$dealer" -ForegroundColor Red
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "$you        Value: $youtotal" -ForegroundColor White
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
                 }
-                cls
+                Show-BerryScreen
 
                 # Outcome decision
                 if ($youtotal -gt $dealertotal -or $dealertotal -gt 21) {
-                    cls
+                    Show-BerryScreen
                     Write-Host "`n───────────────────────────────────────────────────"
-                    Write-Host "$dealer        Value: $dealertotal" -ForegroundColor DarkRed
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "$you        Value: $youtotal" -ForegroundColor DarkCyan
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "`nVictory! You win $($bet) Chips!" -ForegroundColor Green
-                    Write-Host "───────────────────────────────────────────────────"
+                    Write-Host "$dealer        Value: $dealertotal" -ForegroundColor Red
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "$you        Value: $youtotal" -ForegroundColor White
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "`nVictory! You win $($bet) Chips!" -ForegroundColor Cyan
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
                     $balance += $bet  # Increase balance if you win
                 }
                 elseif ($youtotal -eq $dealertotal -and $dealertotal -le 21) {
-                    cls
-                    Write-Host "`n───────────────────────────────────────────────────"
-                    Write-Host "$dealer        Value: $dealertotal" -ForegroundColor DarkRed
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "$you        Value: $youtotal" -ForegroundColor DarkCyan
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "`nDraw! It's a tie!" -ForegroundColor Yellow
-                    Write-Host "───────────────────────────────────────────────────"
-                }
-                else {
-                    cls
+                    Show-BerryScreen
                     Write-Host "`n───────────────────────────────────────────────────"
                     Write-Host "$dealer        Value: $dealertotal" -ForegroundColor Red
-                    Write-Host "───────────────────────────────────────────────────"
-                    Write-Host "$you        Value: $youtotal" -ForegroundColor Green
-                    Write-Host "───────────────────────────────────────────────────"
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "$you        Value: $youtotal" -ForegroundColor White
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "`nDraw! It's a tie!" -ForegroundColor Yellow
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                }
+                else {
+                    Show-BerryScreen
+                    Write-Host "`n───────────────────────────────────────────────────"
+                    Write-Host "$dealer        Value: $dealertotal" -ForegroundColor Red
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+                    Write-Host "$you        Value: $youtotal" -ForegroundColor Cyan
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
                     Write-Host "`nBetter Luck Next Time! You lose $($bet) Chips." -ForegroundColor Red
-                    Write-Host "───────────────────────────────────────────────────"
+                    Write-Host "  $BerryBorder" -ForegroundColor DarkGray
                     $balance -= $bet  # Decrease balance if you lose
                 }
             }
@@ -246,19 +265,19 @@ while ($again -ne "n" -and $balance -gt 0) {
     }
 
     if ($youtotal -gt 21) {
-        cls
+        Show-BerryScreen
         Write-Host "`n───────────────────────────────────────────────────"
-        Write-Host "$dealer        Value: $dealertotal" -ForegroundColor DarkRed
-        Write-Host "───────────────────────────────────────────────────"
-        Write-Host "$you        Value: $youtotal" -ForegroundColor DarkCyan
-        Write-Host "───────────────────────────────────────────────────"
+        Write-Host "$dealer        Value: $dealertotal" -ForegroundColor Red
+        Write-Host "  $BerryBorder" -ForegroundColor DarkGray
+        Write-Host "$you        Value: $youtotal" -ForegroundColor White
+        Write-Host "  $BerryBorder" -ForegroundColor DarkGray
         Write-Host "`nBetter Luck Next Time! You've busted! You lose $($bet) Chips." -ForegroundColor Red
-        Write-Host "───────────────────────────────────────────────────"
+        Write-Host "  $BerryBorder" -ForegroundColor DarkGray
         $balance -= $bet  # Decrease balance if you bust
     }
 
     # Display updated balance
-    Write-Host "`nYour current balance is: $($balance) Chips" -ForegroundColor Green
+    Write-Host "`nYour current balance is: $($balance) Chips" -ForegroundColor Cyan
 
     # Check if player has no more money
     if ($balance -lt 5) {
@@ -287,7 +306,7 @@ while ($again -ne "n" -and $balance -gt 0) {
         $loanAmount += $interest
         $balance -= $interest
         Write-Host "`nInterest charged: $($interest) Chips." -ForegroundColor DarkYellow
-        Write-Host "Loan balance is now: $($loanAmount) Chips." -ForegroundColor DarkRed
+        Write-Host "Loan balance is now: $($loanAmount) Chips." -ForegroundColor Red
     }
 
     # Ask if they want to play again
@@ -296,5 +315,5 @@ while ($again -ne "n" -and $balance -gt 0) {
     }
 }
 
-cls
-Write-Host "`nThanks for playing! Your final balance is: $($balance) Chips" -ForegroundColor Green
+Show-BerryScreen
+Write-Host "`nThanks for playing! Your final balance is: $($balance) Chips" -ForegroundColor Cyan
