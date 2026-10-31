@@ -1,4 +1,4 @@
-# BERRY IT Blackjack | Responsive Desktop Edition 3
+# BERRY IT Blackjack | Responsive Desktop GUI
 # Windows PowerShell 5.1 / Windows Forms, virtual chips only.
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -9,7 +9,7 @@ $bg=C '#0D0E11'; $surface=C '#17191E'; $surface2=C '#202229'
 $line=C '#353840'; $red=C '#FF344D'; $text=C '#F7F7F8'
 $muted=C '#A1A4AC'; $green=C '#73D5B3'
 $form=New-Object System.Windows.Forms.Form
-$form.Text='BERRY IT Blackjack | Desktop Edition 5'
+$form.Text='BERRY IT | Blackjack'
 $form.ClientSize=New-Object System.Drawing.Size(980,850)
 $form.MinimumSize=New-Object System.Drawing.Size(830,750)
 $form.StartPosition='CenterScreen'
@@ -57,17 +57,17 @@ $brand.Dock='Top';$brand.Height=47;$header.Controls.Add($brand)
 $heading=Label 'B L A C K J A C K' 12 $text $true
 $heading.Dock='Top';$heading.Height=31;$header.Controls.Add($heading)
 $header.Controls.SetChildIndex($heading,0)
-$sub=Label 'DESKTOP EDITION 5     •     VIRTUAL CHIPS ONLY' 9 $muted
+$sub=Label 'VIRTUAL CHIPS ONLY' 9 $muted
 $sub.Dock='Bottom';$sub.Height=26;$header.Controls.Add($sub)
 $accent=New-Object System.Windows.Forms.Panel
 $accent.Dock='Bottom';$accent.Height=3;$accent.BackColor=$red;$header.Controls.Add($accent)
 
 # Bottom control area occupies its own space, even at minimum size.
 $controls=New-Object System.Windows.Forms.Panel
-$controls.Dock='Bottom';$controls.Height=174;$controls.BackColor=$surface
+$controls.Dock='Bottom';$controls.Height=202;$controls.BackColor=$surface
 
 $controlGrid=Grid 4
-$controlGrid.Padding=New-Object System.Windows.Forms.Padding(18,7,18,9)
+$controlGrid.Padding=New-Object System.Windows.Forms.Padding(18,6,18,6)
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',22))) | Out-Null
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',59))) | Out-Null
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',50))) | Out-Null
@@ -103,7 +103,9 @@ $footer.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',
 $footer.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',34))) | Out-Null
 $footerText=Label 'BLACKJACK PAYS 3:2  •  DEALER STANDS ON 17' 9 $muted
 $footerText.TextAlign='MiddleLeft'
+$footerText.Margin=New-Object System.Windows.Forms.Padding(0)
 $resetButton=Action 'RESET BANKROLL' $surface2
+$resetButton.Margin=New-Object System.Windows.Forms.Padding(6,1,6,1)
 $resetButton.Font=New-Object System.Drawing.Font('Segoe UI',9,[System.Drawing.FontStyle]::Bold)
 $footer.Controls.Add($footerText,0,0);$footer.Controls.Add($resetButton,1,0)
 $null=TableRow $controlGrid 3 $footer
@@ -129,7 +131,7 @@ $root.Margin=New-Object System.Windows.Forms.Padding(0)
 $root.Padding=New-Object System.Windows.Forms.Padding(0)
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',112))) | Out-Null
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
-$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',174))) | Out-Null
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',202))) | Out-Null
 $form.Controls.Add($root)
 $header.Dock='Fill';$main.Dock='Fill';$controls.Dock='Fill'
 $root.Controls.Add($header,0,0)
