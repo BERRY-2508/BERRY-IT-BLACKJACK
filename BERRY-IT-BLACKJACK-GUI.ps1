@@ -9,9 +9,9 @@ $bg=C '#0D0E11'; $surface=C '#17191E'; $surface2=C '#202229'
 $line=C '#353840'; $red=C '#FF344D'; $text=C '#F7F7F8'
 $muted=C '#A1A4AC'; $green=C '#73D5B3'
 $form=New-Object System.Windows.Forms.Form
-$form.Text='BERRY IT Blackjack | Desktop Edition 4'
-$form.ClientSize=New-Object System.Drawing.Size(980,870)
-$form.MinimumSize=New-Object System.Drawing.Size(830,780)
+$form.Text='BERRY IT Blackjack | Desktop Edition 5'
+$form.ClientSize=New-Object System.Drawing.Size(980,850)
+$form.MinimumSize=New-Object System.Drawing.Size(830,750)
 $form.StartPosition='CenterScreen'
 $form.BackColor=$bg
 $form.ForeColor=$text
@@ -57,20 +57,20 @@ $brand.Dock='Top';$brand.Height=47;$header.Controls.Add($brand)
 $heading=Label 'B L A C K J A C K' 12 $text $true
 $heading.Dock='Top';$heading.Height=31;$header.Controls.Add($heading)
 $header.Controls.SetChildIndex($heading,0)
-$sub=Label 'DESKTOP EDITION 4     •     VIRTUAL CHIPS ONLY' 9 $muted
+$sub=Label 'DESKTOP EDITION 5     •     VIRTUAL CHIPS ONLY' 9 $muted
 $sub.Dock='Bottom';$sub.Height=26;$header.Controls.Add($sub)
 $accent=New-Object System.Windows.Forms.Panel
 $accent.Dock='Bottom';$accent.Height=3;$accent.BackColor=$red;$header.Controls.Add($accent)
 
 # Bottom control area occupies its own space, even at minimum size.
 $controls=New-Object System.Windows.Forms.Panel
-$controls.Dock='Bottom';$controls.Height=224;$controls.BackColor=$surface
+$controls.Dock='Bottom';$controls.Height=174;$controls.BackColor=$surface
 
 $controlGrid=Grid 4
 $controlGrid.Padding=New-Object System.Windows.Forms.Padding(18,7,18,9)
-$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
-$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',82))) | Out-Null
-$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',61))) | Out-Null
+$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',22))) | Out-Null
+$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',59))) | Out-Null
+$controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',50))) | Out-Null
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
 $controls.Controls.Add($controlGrid)
 $null=TableRow $controlGrid 0 (Label 'SELECT CHIPS TO PLACE YOUR BET' 10 $muted $true)
@@ -79,8 +79,8 @@ $chips.Dock='Fill';$chips.WrapContents=$false;$chips.AutoScroll=$false
 $chips.FlowDirection='LeftToRight'
 $chips.BackColor=$surface
 $chips.Anchor='None'
-$chips.Width=500
-$chips.Height=78
+$chips.Width=390
+$chips.Height=57
 $null=TableRow $controlGrid 1 $chips
 $actions=New-Object System.Windows.Forms.TableLayoutPanel
 $actions.Dock='Fill';$actions.RowCount=1;$actions.ColumnCount=3
@@ -88,7 +88,7 @@ $actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent'
 $actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',33.333))) | Out-Null
 $actions.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',33.334))) | Out-Null
 $actions.MaximumSize=New-Object System.Drawing.Size(450,0)
-$actions.Anchor='None';$actions.Width=450;$actions.Height=59
+$actions.Anchor='None';$actions.Width=450;$actions.Height=48
 $null=TableRow $controlGrid 2 $actions
 $dealButton=Action 'DEAL' $red
 $hitButton=Action 'HIT' (C '#73313B')
@@ -110,16 +110,16 @@ $null=TableRow $controlGrid 3 $footer
 
 # Table and hands use proportional space, not absolute y coordinates.
 $main=New-Object System.Windows.Forms.Panel
-$main.Dock='Fill';$main.Padding=New-Object System.Windows.Forms.Padding(30,15,30,13)
+$main.Dock='Fill';$main.Padding=New-Object System.Windows.Forms.Padding(30,8,30,8)
 
 $play=Grid 7
-$play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',46))) | Out-Null
+$play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',39))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',50))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',12))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',50))) | Out-Null
-$play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',49))) | Out-Null
+$play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',42))) | Out-Null
 $main.Controls.Add($play)
 # Dedicated root grid: header, flexible table, bottom controls each own a row.
 # Never use competing Dock.Top/Bottom/Fill siblings on the Form.
@@ -129,7 +129,7 @@ $root.Margin=New-Object System.Windows.Forms.Padding(0)
 $root.Padding=New-Object System.Windows.Forms.Padding(0)
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',112))) | Out-Null
 $root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
-$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',224))) | Out-Null
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',174))) | Out-Null
 $form.Controls.Add($root)
 $header.Dock='Fill';$main.Dock='Fill';$controls.Dock='Fill'
 $root.Controls.Add($header,0,0)
@@ -177,12 +177,12 @@ foreach($spec in $chipSpecs) {
     $chip=New-Object System.Windows.Forms.Button
     $chip.Text=[string]$spec.Value
     $chip.Tag=[int]$spec.Value
-    $chip.Size=New-Object System.Drawing.Size(69,69)
-    $chip.Margin=New-Object System.Windows.Forms.Padding(7,3,7,3)
+    $chip.Size=New-Object System.Drawing.Size(50,50)
+    $chip.Margin=New-Object System.Windows.Forms.Padding(5,2,5,2)
     $chip.FlatStyle='Flat';$chip.FlatAppearance.BorderSize=0
     $chip.Cursor='Hand';$chip.BackColor=$surface
     $chip.ForeColor=$text
-    $chip.Font=New-Object System.Drawing.Font('Segoe UI',13,[System.Drawing.FontStyle]::Bold)
+    $chip.Font=New-Object System.Drawing.Font('Segoe UI',10,[System.Drawing.FontStyle]::Bold)
     $chipColors=@{5=(C '#596474');10=(C '#147F92');25=(C '#C17B20');50=(C '#C72348')}
     $chip.Add_Paint({
         param($sender,$e)
@@ -194,10 +194,10 @@ foreach($spec in $chipSpecs) {
         $ring=New-Object System.Drawing.Pen($text,3)
         $inner=New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(170,255,255,255),1)
         try {
-            $e.Graphics.FillEllipse($fill,4,4,60,60)
-            $e.Graphics.DrawEllipse($ring,4,4,60,60)
-            $e.Graphics.DrawEllipse($inner,10,10,48,48)
-            [System.Windows.Forms.TextRenderer]::DrawText($e.Graphics,$sender.Text,$sender.Font,(New-Object System.Drawing.Rectangle(4,4,61,61)),$text,([System.Windows.Forms.TextFormatFlags]::HorizontalCenter -bor [System.Windows.Forms.TextFormatFlags]::VerticalCenter -bor [System.Windows.Forms.TextFormatFlags]::SingleLine))
+            $e.Graphics.FillEllipse($fill,3,3,44,44)
+            $e.Graphics.DrawEllipse($ring,3,3,44,44)
+            $e.Graphics.DrawEllipse($inner,8,8,34,34)
+            [System.Windows.Forms.TextRenderer]::DrawText($e.Graphics,$sender.Text,$sender.Font,(New-Object System.Drawing.Rectangle(3,3,45,45)),$text,([System.Windows.Forms.TextFormatFlags]::HorizontalCenter -bor [System.Windows.Forms.TextFormatFlags]::VerticalCenter -bor [System.Windows.Forms.TextFormatFlags]::SingleLine))
         } finally {$fill.Dispose();$ring.Dispose();$inner.Dispose()}
     })
     $chip.Add_Click({
@@ -217,8 +217,8 @@ foreach($spec in $chipSpecs) {
     $chipButtons+= $chip
 }
 $clearBetButton=New-Object System.Windows.Forms.Button
-$clearBetButton.Text='CLEAR BET';$clearBetButton.Size=New-Object System.Drawing.Size(128,47)
-$clearBetButton.Margin=New-Object System.Windows.Forms.Padding(13,14,0,0)
+$clearBetButton.Text='CLEAR BET';$clearBetButton.Size=New-Object System.Drawing.Size(112,37)
+$clearBetButton.Margin=New-Object System.Windows.Forms.Padding(10,7,0,0)
 $clearBetButton.BackColor=$surface2;$clearBetButton.ForeColor=$text
 $clearBetButton.FlatStyle='Flat';$clearBetButton.FlatAppearance.BorderSize=1
 $clearBetButton.FlatAppearance.BorderColor=$line
