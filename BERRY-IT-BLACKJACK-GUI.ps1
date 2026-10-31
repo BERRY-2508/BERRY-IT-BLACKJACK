@@ -247,14 +247,9 @@ function Update-Layout {
     $pad=36
     $tableWidth=$w-($pad*2)
 
-    foreach($item in @(
-        @($form.Controls[0],13,39),
-        @($form.Controls[1],52,28),
-        @($form.Controls[2],84,22)
-    )){
-        $item[0].Location=New-Object System.Drawing.Point(0,$item[1])
-        $item[0].Width=$w
-    }
+    $form.Controls[0].SetBounds(0,13,$w,39)
+    $form.Controls[1].SetBounds(0,52,$w,28)
+    $form.Controls[2].SetBounds(0,84,$w,22)
     $balanceLabel.Location=New-Object System.Drawing.Point($pad,131)
     $balanceLabel.Width=[int](($w/2)-$pad)
     $balanceLabel.TextAlign='MiddleLeft'
