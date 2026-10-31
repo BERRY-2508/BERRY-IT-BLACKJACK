@@ -76,7 +76,7 @@ for($i=0;$i -lt $chipValues.Count;$i++){
     $chip.Font=New-Object System.Drawing.Font('Segoe UI',15,[System.Drawing.FontStyle]::Bold)
     $circle=New-Object System.Drawing.Drawing2D.GraphicsPath
     $circle.AddEllipse(0,0,65,65)
-    $chip.Region=New-Object System.Drawing.Region($circle)
+    $chip.Region=[System.Drawing.Region]::new($circle)
     $circle.Dispose()
     $chip.Add_Click({
         if($state.InRound){return}
