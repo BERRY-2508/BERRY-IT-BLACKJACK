@@ -255,9 +255,10 @@ function Center-Hand($area) {
     $cardWidth=70;$gap=10
     $full=$n*$cardWidth+($n-1)*$gap
     $left=[Math]::Max(8,[int](($area.ClientSize.Width-$full)/2))
-    $top=[Math]::Max(4,[int](($area.ClientSize.Height-98)/2))
+    $cardHeight=[Math]::Min(92,[Math]::Max(60,$area.ClientSize.Height-8))
+    $top=[Math]::Max(3,[int](($area.ClientSize.Height-$cardHeight)/2))
     for($i=0;$i -lt $n;$i++){
-        $cards[$i].SetBounds(($left+$i*($cardWidth+$gap)),$top,$cardWidth,98)
+        $cards[$i].SetBounds(($left+$i*($cardWidth+$gap)),$top,$cardWidth,$cardHeight)
     }
 }
 function Draw-Hand($area,$hand,$hideHole) {
