@@ -9,9 +9,9 @@ $bg=C '#0D0E11'; $surface=C '#17191E'; $surface2=C '#202229'
 $line=C '#353840'; $red=C '#FF344D'; $text=C '#F7F7F8'
 $muted=C '#A1A4AC'; $green=C '#73D5B3'
 $form=New-Object System.Windows.Forms.Form
-$form.Text='BERRY IT Blackjack | Desktop Edition 3'
-$form.ClientSize=New-Object System.Drawing.Size(980,800)
-$form.MinimumSize=New-Object System.Drawing.Size(790,690)
+$form.Text='BERRY IT Blackjack | Desktop Edition 4'
+$form.ClientSize=New-Object System.Drawing.Size(980,870)
+$form.MinimumSize=New-Object System.Drawing.Size(830,780)
 $form.StartPosition='CenterScreen'
 $form.BackColor=$bg
 $form.ForeColor=$text
@@ -51,13 +51,13 @@ function Grid([int]$rows) {
 # Header never overlaps the play area.
 $header=New-Object System.Windows.Forms.Panel
 $header.Dock='Top';$header.Height=112;$header.BackColor=$surface
-$form.Controls.Add($header)
+
 $brand=Label 'B E R R Y   I T' 19 $red $true
 $brand.Dock='Top';$brand.Height=47;$header.Controls.Add($brand)
 $heading=Label 'B L A C K J A C K' 12 $text $true
 $heading.Dock='Top';$heading.Height=31;$header.Controls.Add($heading)
-$header.Controls.SetChildIndex($brand,0)
-$sub=Label 'DESKTOP EDITION 3     •     VIRTUAL CHIPS ONLY' 9 $muted
+$header.Controls.SetChildIndex($heading,0)
+$sub=Label 'DESKTOP EDITION 4     •     VIRTUAL CHIPS ONLY' 9 $muted
 $sub.Dock='Bottom';$sub.Height=26;$header.Controls.Add($sub)
 $accent=New-Object System.Windows.Forms.Panel
 $accent.Dock='Bottom';$accent.Height=3;$accent.BackColor=$red;$header.Controls.Add($accent)
@@ -65,7 +65,7 @@ $accent.Dock='Bottom';$accent.Height=3;$accent.BackColor=$red;$header.Controls.A
 # Bottom control area occupies its own space, even at minimum size.
 $controls=New-Object System.Windows.Forms.Panel
 $controls.Dock='Bottom';$controls.Height=224;$controls.BackColor=$surface
-$form.Controls.Add($controls)
+
 $controlGrid=Grid 4
 $controlGrid.Padding=New-Object System.Windows.Forms.Padding(18,7,18,9)
 $controlGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
@@ -111,8 +111,7 @@ $null=TableRow $controlGrid 3 $footer
 # Table and hands use proportional space, not absolute y coordinates.
 $main=New-Object System.Windows.Forms.Panel
 $main.Dock='Fill';$main.Padding=New-Object System.Windows.Forms.Padding(30,15,30,13)
-$form.Controls.Add($main)
-$main.SendToBack()
+
 $play=Grid 7
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',46))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) | Out-Null
@@ -122,6 +121,21 @@ $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',29))) |
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',50))) | Out-Null
 $play.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',49))) | Out-Null
 $main.Controls.Add($play)
+# Dedicated root grid: header, flexible table, bottom controls each own a row.
+# Never use competing Dock.Top/Bottom/Fill siblings on the Form.
+$root=New-Object System.Windows.Forms.TableLayoutPanel
+$root.Dock='Fill';$root.ColumnCount=1;$root.RowCount=3
+$root.Margin=New-Object System.Windows.Forms.Padding(0)
+$root.Padding=New-Object System.Windows.Forms.Padding(0)
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',112))) | Out-Null
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent',100))) | Out-Null
+$root.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Absolute',224))) | Out-Null
+$form.Controls.Add($root)
+$header.Dock='Fill';$main.Dock='Fill';$controls.Dock='Fill'
+$root.Controls.Add($header,0,0)
+$root.Controls.Add($main,0,1)
+$root.Controls.Add($controls,0,2)
+
 $stats=New-Object System.Windows.Forms.TableLayoutPanel
 $stats.Dock='Fill';$stats.ColumnCount=2;$stats.RowCount=1
 $stats.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle('Percent',50))) | Out-Null
@@ -169,7 +183,7 @@ foreach($spec in $chipSpecs) {
     $chip.Cursor='Hand';$chip.BackColor=$surface
     $chip.ForeColor=$text
     $chip.Font=New-Object System.Drawing.Font('Segoe UI',13,[System.Drawing.FontStyle]::Bold)
-    $chipColors=@{5=C '#596474';10=C '#147F92';25=C '#C17B20';50=C '#C72348'}
+    $chipColors=@{5=(C '#596474');10=(C '#147F92');25=(C '#C17B20');50=(C '#C72348')}
     $chip.Add_Paint({
         param($sender,$e)
         $e.Graphics.SmoothingMode=[System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
