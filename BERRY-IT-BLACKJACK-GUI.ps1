@@ -366,4 +366,19 @@ $resetButton.Add_Click({
 $dealerArea.Add_Resize({Center-Hand $dealerArea})
 $playerArea.Add_Resize({Center-Hand $playerArea})
 Refresh-Table
+# Clamp the actual WinForms window after DPI autoscaling to the monitor work area.
+# This keeps the caption buttons reachable on laptops and scaled displays.
+$form.Add_Shown({
+    $work = [System.Windows.Forms.Screen]::FromControl($form).WorkingArea
+    $margin = 24
+    $maxWidth = [Math]::Max(320, $work.Width - $margin)
+    $maxHeight = [Math]::Max(320, $work.Height - $margin)
+    $form.MinimumSize = New-Object System.Drawing.Size(
+        [Math]::Min(830, $maxWidth), [Math]::Min(750, $maxHeight))
+    $form.Size = New-Object System.Drawing.Size(
+        [Math]::Min($form.Width, $maxWidth), [Math]::Min($form.Height, $maxHeight))
+    $form.Location = New-Object System.Drawing.Point(
+        ($work.Left + [Math]::Max(0, [int](($work.Width - $form.Width) / 2))),
+        ($work.Top + [Math]::Max(0, [int](($work.Height - $form.Height) / 2))))
+})
 [void]$form.ShowDialog()
