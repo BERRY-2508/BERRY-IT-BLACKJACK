@@ -14,7 +14,7 @@ $muted = [System.Drawing.ColorTranslator]::FromHtml('#ACAAB2')
 $green = [System.Drawing.ColorTranslator]::FromHtml('#68C8A1')
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = 'BERRY IT | Blackjack'
+$form.Text = 'BERRY IT | Blackjack — Modern Table v2'
 $form.ClientSize = New-Object System.Drawing.Size(980,850)
 $form.MinimumSize = New-Object System.Drawing.Size(830,770)
 $form.StartPosition = 'CenterScreen'
@@ -53,13 +53,13 @@ $dealerTotalLabel=Add-Label 'DEALER  |  TOTAL: --' 40 167 820 25 12 $muted $true
 $dealerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $dealerArea.Location=New-Object System.Drawing.Point(35,196)
 $dealerArea.Size=New-Object System.Drawing.Size(830,100)
-$dealerArea.BackColor=$surface; $dealerArea.WrapContents=$false; $dealerArea.AutoScroll=$true
+$dealerArea.BackColor=$surface; $dealerArea.WrapContents=$false; $dealerArea.AutoScroll=$true; $dealerArea.BorderStyle='FixedSingle'
 $form.Controls.Add($dealerArea)
 $playerTotalLabel=Add-Label 'YOUR HAND  |  TOTAL: --' 40 313 820 25 12 $muted $true
 $playerArea=New-Object System.Windows.Forms.FlowLayoutPanel
 $playerArea.Location=New-Object System.Drawing.Point(35,341)
 $playerArea.Size=New-Object System.Drawing.Size(830,100)
-$playerArea.BackColor=$surface; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true
+$playerArea.BackColor=$surface; $playerArea.WrapContents=$false; $playerArea.AutoScroll=$true; $playerArea.BorderStyle='FixedSingle'
 $form.Controls.Add($playerArea)
 $statusLabel=Add-Label 'Choose your bet and press DEAL.' 35 460 830 42 15 $white $true
 $null=Add-Label 'CLICK CHIPS TO PLACE YOUR BET' 0 503 900 24 11 $muted $true
@@ -301,7 +301,22 @@ $statusLabel.BackColor=$surface
 $statusLabel.ForeColor=$white
 $dealerArea.Padding=New-Object System.Windows.Forms.Padding(0)
 $playerArea.Padding=New-Object System.Windows.Forms.Padding(0)
+# Modern presentation: distinct table regions, strong header, and understated control palette.
+$brandBar=New-Object System.Windows.Forms.Panel
+$brandBar.BackColor=[System.Drawing.ColorTranslator]::FromHtml('#201519')
+$brandBar.Dock='Top'
+$brandBar.Height=6
+$form.Controls.Add($brandBar)
+$brandBar.BringToFront()
+$form.Controls[0].Font=New-Object System.Drawing.Font('Segoe UI',24,[System.Drawing.FontStyle]::Bold)
+$dealerTotalLabel.ForeColor=$red
+$playerTotalLabel.ForeColor=$white
+$dealerArea.BackColor=[System.Drawing.ColorTranslator]::FromHtml('#171A1D')
+$playerArea.BackColor=[System.Drawing.ColorTranslator]::FromHtml('#171A1D')
+$dealerArea.BorderStyle='FixedSingle'
+$playerArea.BorderStyle='FixedSingle'
 $form.Add_Resize({Update-Layout})
+$form.Add_Shown({Update-Layout})
 Update-Layout
 Refresh-Table
 [void]$form.ShowDialog()
